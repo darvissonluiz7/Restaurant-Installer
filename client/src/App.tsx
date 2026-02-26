@@ -10,18 +10,30 @@ import Dashboard from "@/pages/dashboard";
 import Orders from "@/pages/orders";
 import Menu from "@/pages/menu";
 import Tables from "@/pages/tables";
+import Login from "@/pages/login";
+import CustomerMenu from "@/pages/customer-menu";
 
 function Router() {
   return (
-    <Shell>
-      <Switch>
-        <Route path="/" component={Dashboard}/>
-        <Route path="/orders" component={Orders}/>
-        <Route path="/menu" component={Menu}/>
-        <Route path="/tables" component={Tables}/>
-        <Route component={NotFound} />
-      </Switch>
-    </Shell>
+    <Switch>
+      <Route path="/login" component={Login}/>
+      <Route path="/m/:tableId" component={CustomerMenu}/>
+      
+      <Route path="/">
+        <Shell><Dashboard /></Shell>
+      </Route>
+      <Route path="/orders">
+        <Shell><Orders /></Shell>
+      </Route>
+      <Route path="/menu">
+        <Shell><Menu /></Shell>
+      </Route>
+      <Route path="/tables">
+        <Shell><Tables /></Shell>
+      </Route>
+      
+      <Route component={NotFound} />
+    </Switch>
   );
 }
 
