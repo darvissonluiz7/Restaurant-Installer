@@ -1,12 +1,27 @@
 import { useState } from "react";
-import { useParams } from "wouter";
+import { useParams, Link, useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UtensilsCrossed, Bell, Receipt, ShoppingCart, Plus, Minus, CreditCard } from "lucide-react";
+import { 
+  UtensilsCrossed, 
+  Bell, 
+  Receipt, 
+  ShoppingCart, 
+  Plus, 
+  Minus, 
+  CreditCard,
+  Menu as MenuIcon,
+  X,
+  History,
+  User,
+  Info,
+  Home
+} from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 const menuItems = [
   { id: 1, name: "Bife Ancho com Fritas", category: "Pratos", price: 65, img: "🥩" },
@@ -51,12 +66,66 @@ export default function CustomerMenu() {
 
   return (
     <div className="min-h-screen bg-secondary/10 pb-32">
-      {/* Header */}
+      {/* Header with Sidebar Trigger */}
       <header className="bg-card border-b border-border/50 sticky top-0 z-20 px-4 py-4 shadow-sm">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2 text-primary font-display font-bold text-xl">
-            <UtensilsCrossed className="w-6 h-6" />
-            RestoPro
+          <div className="flex items-center gap-3">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden -ml-2">
+                  <MenuIcon className="w-6 h-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-[280px] p-0 border-r border-border/50">
+                <SheetHeader className="p-6 border-b border-border/50 bg-primary/5">
+                  <div className="flex items-center gap-2 text-primary font-display font-bold text-2xl">
+                    <UtensilsCrossed className="w-7 h-7" />
+                    RestoPro
+                  </div>
+                  <SheetTitle className="text-left text-sm font-medium text-muted-foreground mt-1">
+                    Mesa {tableId}
+                  </SheetTitle>
+                </SheetHeader>
+                <div className="py-4">
+                  <nav className="px-2 space-y-1">
+                    <Button variant="ghost" className="w-full justify-start gap-3 h-12 text-primary bg-primary/10">
+                      <Home className="w-5 h-5" />
+                      Cardápio Principal
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start gap-3 h-12 text-muted-foreground hover:text-foreground">
+                      <History className="w-5 h-5" />
+                      Meus Pedidos
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start gap-3 h-12 text-muted-foreground hover:text-foreground">
+                      <User className="w-5 h-5" />
+                      Perfil / Fidelidade
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start gap-3 h-12 text-muted-foreground hover:text-foreground">
+                      <Info className="w-5 h-5" />
+                      Sobre o Restaurante
+                    </Button>
+                  </nav>
+                  <div className="mt-8 px-6">
+                    <div className="p-4 rounded-xl bg-secondary/50 border border-border/50">
+                      <p className="text-xs text-muted-foreground mb-2 italic">Precisa de algo?</p>
+                      <Button 
+                        variant="default" 
+                        size="sm" 
+                        className="w-full bg-primary text-white"
+                        onClick={handleCallWaiter}
+                        disabled={isCallingWaiter}
+                      >
+                        Chamar Garçom
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
+            <div className="flex items-center gap-2 text-primary font-display font-bold text-xl">
+              <UtensilsCrossed className="w-6 h-6 hidden xs:block" />
+              RestoPro
+            </div>
           </div>
           <Badge variant="outline" className="font-mono bg-primary/5 text-primary border-primary/20">
             Mesa {tableId}
