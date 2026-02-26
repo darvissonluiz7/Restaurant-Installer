@@ -399,6 +399,21 @@ def customer_order_view(request, table_number):
     return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
 
 
+@api_view(["GET"])
+@permission_classes([permissions.AllowAny])
+def customer_orders_view(request, table_number):
+    """GET /api/customer/{table_number}/orders/ — lista pedidos da mesa."""
+    try:
+        table = Table.objects.get(number=table_number)
+    except Table.DoesNotExist:
+        return Response(
+            {"detail": "Mesa não encontrada."}, status=status.HTTP_404_NOT_FOUND
+        )
+
+    orders = table.orders.all().order_by("-created_at")
+    return Response(OrderSerializer(orders, many=True).data)
+
+
 @api_view(["POST"])
 @permission_classes([permissions.AllowAny])
 def customer_call_waiter_view(request, table_number):

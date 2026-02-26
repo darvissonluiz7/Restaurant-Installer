@@ -4,6 +4,7 @@
  */
 
 import { apiRequest, apiRequestFormData } from "./queryClient";
+import { API_BASE } from "./env";
 
 // ── Types ───────────────────────────────────────────────────────────────
 
@@ -123,7 +124,7 @@ export interface PaginatedResponse<T> {
 
 // ── API functions ───────────────────────────────────────────────────────
 
-const BASE = "/api";
+const BASE = `${API_BASE}/api`;
 
 // Auth
 export const api = {
@@ -262,6 +263,12 @@ export const api = {
 
   customerOrder: async (tableNumber: number, items: { menu_item: string; quantity: number; notes?: string }[]) => {
     const res = await apiRequest("POST", `${BASE}/customer/${tableNumber}/order/`, { items });
+    return res.json();
+  },
+
+  customerGetOrders: async (tableNumber: number): Promise<Order[]> => {
+    const res = await fetch(`${BASE}/customer/${tableNumber}/orders/`);
+    if (!res.ok) throw new Error("Erro ao carregar pedidos");
     return res.json();
   },
 

@@ -36,6 +36,11 @@ urlpatterns = [
         name="customer-order",
     ),
     path(
+        "customer/<int:table_number>/orders/",
+        views.customer_orders_view,
+        name="customer-orders",
+    ),
+    path(
         "customer/<int:table_number>/call-waiter/",
         views.customer_call_waiter_view,
         name="customer-call-waiter",

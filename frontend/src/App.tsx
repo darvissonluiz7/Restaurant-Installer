@@ -14,6 +14,13 @@ import Menu from "@/pages/admin/menu";
 import Tables from "@/pages/admin/tables";
 import Login from "@/pages/admin/login";
 import CustomerMenu from "@/pages/usuario/customer-menu";
+import CustomerOrder from "@/pages/usuario/customer-order";
+import CustomerWaiter from "@/pages/usuario/customer-waiter";
+import CustomerBill from "@/pages/usuario/customer-bill";
+import CustomerReviews from "@/pages/usuario/customer-reviews";
+import CustomerLoyalty from "@/pages/usuario/customer-loyalty";
+import CustomerAbout from "@/pages/usuario/customer-about";
+import CustomerContact from "@/pages/usuario/customer-contact";
 import SelectTable from "@/pages/usuario/select-table";
 
 /** Wrapper that protects admin routes — redirects to /login if unauthenticated */
@@ -61,6 +68,13 @@ function Router() {
       {/* Customer routes */}
       <Route path="/" component={SelectTable} />
       <Route path="/m/:tableId" component={CustomerMenu} />
+      <Route path="/m/:tableId/pedido" component={CustomerOrder} />
+      <Route path="/m/:tableId/garcom" component={CustomerWaiter} />
+      <Route path="/m/:tableId/conta" component={CustomerBill} />
+      <Route path="/m/:tableId/avaliacoes" component={CustomerReviews} />
+      <Route path="/m/:tableId/fidelidade" component={CustomerLoyalty} />
+      <Route path="/m/:tableId/sobre" component={CustomerAbout} />
+      <Route path="/m/:tableId/contato" component={CustomerContact} />
 
       {/* Admin routes */}
       <Route path="/admin/login">
