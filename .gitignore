@@ -1,6 +1,18 @@
-node_modules
-dist
+# Frontend
+node_modules/
+dist/
+
+# Backend (Django)
+.venv/
+backend/venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/**/*.pyc
+backend/db.sqlite3
+backend/media/
+backend/staticfiles/
+backend/.env
+
+# OS
 .DS_Store
-server/public
-vite.config.ts.*
 *.tar.gz

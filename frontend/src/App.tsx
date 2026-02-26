@@ -1,0 +1,98 @@
+import { Switch, Route, Redirect, useLocation } from "wouter";
+import { queryClient } from "./lib/queryClient";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import NotFound from "@/pages/not-found";
+import { useAuth } from "@/hooks/use-auth";
+import { Loader2 } from "lucide-react";
+
+import Shell from "@/components/admin/Shell";
+import Dashboard from "@/pages/admin/dashboard";
+import Orders from "@/pages/admin/orders";
+import Menu from "@/pages/admin/menu";
+import Tables from "@/pages/admin/tables";
+import Login from "@/pages/admin/login";
+import CustomerMenu from "@/pages/usuario/customer-menu";
+import SelectTable from "@/pages/usuario/select-table";
+
+/** Wrapper that protects admin routes — redirects to /login if unauthenticated */
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading } = useAuth();
+  const [location] = useLocation();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Redirect to="/admin/login" />;
+  }
+
+  return <>{children}</>;
+}
+
+/** If already logged in, redirect away from login page */
+function GuestRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (isAuthenticated) {
+    return <Redirect to="/admin" />;
+  }
+
+  return <>{children}</>;
+}
+
+function Router() {
+  return (
+    <Switch>
+      {/* Customer routes */}
+      <Route path="/" component={SelectTable} />
+      <Route path="/m/:tableId" component={CustomerMenu} />
+
+      {/* Admin routes */}
+      <Route path="/admin/login">
+        <GuestRoute><Login /></GuestRoute>
+      </Route>
+      <Route path="/admin">
+        <ProtectedRoute><Shell><Dashboard /></Shell></ProtectedRoute>
+      </Route>
+      <Route path="/admin/orders">
+        <ProtectedRoute><Shell><Orders /></Shell></ProtectedRoute>
+      </Route>
+      <Route path="/admin/menu">
+        <ProtectedRoute><Shell><Menu /></Shell></ProtectedRoute>
+      </Route>
+      <Route path="/admin/tables">
+        <ProtectedRoute><Shell><Tables /></Shell></ProtectedRoute>
+      </Route>
+
+      <Route component={NotFound} />
+    </Switch>
+  );
+}
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Router />
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+}
+
+export default App;
