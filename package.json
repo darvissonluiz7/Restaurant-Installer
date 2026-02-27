@@ -1,0 +1,24 @@
+{
+  "name": "restaurant-installer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/darvissonluiz7/Restaurant-Installer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/darvissonluiz7/Restaurant-Installer/issues"
+  },
+  "homepage": "https://github.com/darvissonluiz7/Restaurant-Installer#readme",
+  "devDependencies": {
+    "electron": "^40.6.1"
+  }
+}

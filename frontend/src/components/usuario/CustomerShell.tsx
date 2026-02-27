@@ -11,7 +11,6 @@ import {
   Receipt,
   ShoppingCart,
   Home,
-  History,
   Info,
   Phone,
   MapPin,
@@ -26,7 +25,6 @@ import { getCart } from "@/pages/usuario/customer-order";
 const routeMap: Record<string, string> = {
   menu: "",
   cart: "/pedido",
-  orders: "/pedido",
   waiter: "/garcom",
   bill: "/conta",
   reviews: "/avaliacoes",
@@ -39,7 +37,6 @@ const routeMap: Record<string, string> = {
 const navItems = [
   { icon: Home, label: "Cardápio", id: "menu" },
   { icon: ShoppingCart, label: "Meu Pedido", id: "cart" },
-  { icon: History, label: "Meus Pedidos", id: "orders" },
   { icon: Bell, label: "Chamar Garçom", id: "waiter" },
   { icon: Receipt, label: "Pedir Conta", id: "bill" },
 ];
@@ -91,7 +88,7 @@ function SidebarContent({
           </p>
           <nav className="space-y-0.5">
             {navItems.map((item) => {
-              const isActive = item.id === activeId || (activeId === "orders" && item.id === "cart");
+              const isActive = item.id === activeId;
               return (
                 <button
                   key={item.id}

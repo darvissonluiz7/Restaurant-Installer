@@ -1,8 +1,9 @@
 import { useParams } from "wouter";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 import {
   Receipt,
   Loader2,
@@ -14,6 +15,8 @@ import {
   ChefHat,
   Package,
   XCircle,
+  Copy,
+  Bell,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { api, formatBRL, type Order, type BillData } from "@/lib/api";
@@ -28,18 +31,26 @@ const statusConfig: Record<string, { label: string; icon: React.ElementType; col
   cancelled: { label: "Cancelado", icon: XCircle, color: "text-red-600" },
 };
 
+type PaymentMethod = "cartao" | "dinheiro" | "pix" | null;
+
+// Pix key do restaurante — pode ser configurado
+const PIX_KEY = "restopro@email.com";
+const PIX_BENEFICIARY = "RestoPro Restaurante";
+
 export default function CustomerBill() {
   const { tableId } = useParams();
   const tableNumber = parseInt(tableId || "0", 10);
   const [billData, setBillData] = useState<BillData | null>(null);
   const [requested, setRequested] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState<PaymentMethod>(null);
+  const [pixCopied, setPixCopied] = useState(false);
 
   const billMutation = useMutation({
     mutationFn: () => api.customerRequestBill(tableNumber),
     onSuccess: (data) => {
       setBillData(data);
       setRequested(true);
-      toast({ title: "Conta Solicitada!", description: "O garçom trará a maquininha." });
+      toast({ title: "Conta Solicitada!", description: "Escolha a forma de pagamento abaixo." });
     },
     onError: () => {
       toast({ title: "Erro", description: "Não foi possível solicitar a conta.", variant: "destructive" });
@@ -47,6 +58,17 @@ export default function CustomerBill() {
   });
 
   const billTotal = billData ? parseFloat(billData.total) : 0;
+
+  const copyPixKey = async () => {
+    try {
+      await navigator.clipboard.writeText(PIX_KEY);
+      setPixCopied(true);
+      toast({ title: "Copiado!", description: "Chave Pix copiada para a área de transferência." });
+      setTimeout(() => setPixCopied(false), 3000);
+    } catch {
+      toast({ title: "Erro", description: "Não foi possível copiar.", variant: "destructive" });
+    }
+  };
 
   return (
     <CustomerShell activeId="bill" title="Pedir Conta" titleIcon={<Receipt className="w-5 h-5 lg:hidden" />}>
@@ -69,13 +91,13 @@ export default function CustomerBill() {
             {requested ? (
               <div className="space-y-2">
                 <h1 className="text-2xl font-bold text-green-700">Conta Solicitada!</h1>
-                <p className="text-muted-foreground">O garçom trará a maquininha até sua mesa.</p>
+                <p className="text-muted-foreground">Escolha como deseja pagar abaixo.</p>
               </div>
             ) : (
               <div className="space-y-2">
                 <h1 className="text-2xl font-bold">Hora de fechar a conta?</h1>
                 <p className="text-muted-foreground">
-                  Solicite a conta e o garçom trará a maquininha para pagamento.
+                  Solicite a conta e escolha a forma de pagamento.
                 </p>
               </div>
             )}
@@ -135,48 +157,170 @@ export default function CustomerBill() {
           )}
 
           {/* Request button */}
-          <Button
-            size="lg"
-            className={`w-full h-16 text-lg font-bold rounded-2xl shadow-lg transition-all ${
-              requested
-                ? "bg-green-600 hover:bg-green-700 shadow-green-200"
-                : "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-200"
-            }`}
-            onClick={() => billMutation.mutate()}
-            disabled={billMutation.isPending}
-          >
-            {billMutation.isPending ? (
-              <Loader2 className="w-6 h-6 mr-3 animate-spin" />
-            ) : requested ? (
-              <CheckCircle2 className="w-6 h-6 mr-3" />
-            ) : (
-              <Receipt className="w-6 h-6 mr-3" />
-            )}
-            {billMutation.isPending
-              ? "Carregando..."
-              : requested
-              ? "Solicitar Novamente"
-              : "Solicitar Conta"}
-          </Button>
+          {!requested && (
+            <Button
+              size="lg"
+              className="w-full h-16 text-lg font-bold rounded-2xl shadow-lg bg-emerald-600 hover:bg-emerald-700 shadow-emerald-200 transition-all"
+              onClick={() => billMutation.mutate()}
+              disabled={billMutation.isPending}
+            >
+              {billMutation.isPending ? (
+                <Loader2 className="w-6 h-6 mr-3 animate-spin" />
+              ) : (
+                <Receipt className="w-6 h-6 mr-3" />
+              )}
+              {billMutation.isPending ? "Carregando..." : "Solicitar Conta"}
+            </Button>
+          )}
 
-          {/* Payment methods info */}
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-muted-foreground">Formas de Pagamento</h3>
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                { icon: CreditCard, label: "Cartão" },
-                { icon: Banknote, label: "Dinheiro" },
-                { icon: QrCode, label: "Pix" },
-              ].map(({ icon: Icon, label }) => (
-                <Card key={label} className="border-border/30">
-                  <CardContent className="flex flex-col items-center justify-center py-4 gap-2">
-                    <Icon className="w-6 h-6 text-muted-foreground" />
-                    <span className="text-xs font-medium text-muted-foreground">{label}</span>
+          {/* Payment methods — shown after requesting */}
+          {requested && (
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-muted-foreground text-center">
+                Como deseja pagar?
+              </h3>
+
+              <div className="grid grid-cols-3 gap-3">
+                {([
+                  { id: "cartao" as PaymentMethod, icon: CreditCard, label: "Cartão", color: "blue" },
+                  { id: "dinheiro" as PaymentMethod, icon: Banknote, label: "Dinheiro", color: "green" },
+                  { id: "pix" as PaymentMethod, icon: QrCode, label: "Pix", color: "purple" },
+                ]).map(({ id, icon: Icon, label, color }) => {
+                  const isSelected = selectedPayment === id;
+                  return (
+                    <button
+                      key={id}
+                      onClick={() => setSelectedPayment(id)}
+                      className={`rounded-xl border-2 p-4 flex flex-col items-center gap-2 transition-all ${
+                        isSelected
+                          ? `border-${color}-500 bg-${color}-50 shadow-md scale-[1.02]`
+                          : "border-border/40 bg-card hover:border-border hover:shadow-sm"
+                      }`}
+                    >
+                      <Icon className={`w-7 h-7 ${isSelected ? `text-${color}-600` : "text-muted-foreground"}`} />
+                      <span className={`text-sm font-semibold ${isSelected ? `text-${color}-700` : "text-muted-foreground"}`}>
+                        {label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Cartão — garçom vem à mesa */}
+              {selectedPayment === "cartao" && (
+                <Card className="border-blue-200 bg-blue-50/50 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
+                  <CardContent className="p-5 text-center space-y-3">
+                    <div className="mx-auto w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center">
+                      <Bell className="w-7 h-7 text-blue-600" />
+                    </div>
+                    <h4 className="font-bold text-blue-800">Pagamento com Cartão</h4>
+                    <p className="text-sm text-blue-700">
+                      O garçom levará a <strong>maquininha</strong> até sua mesa para você pagar com cartão de crédito ou débito.
+                    </p>
+                    <Badge className="bg-blue-100 text-blue-700 border-blue-200 shadow-none">
+                      <Clock className="w-3 h-3 mr-1" /> Aguarde o garçom
+                    </Badge>
                   </CardContent>
                 </Card>
-              ))}
+              )}
+
+              {/* Dinheiro — garçom vem à mesa */}
+              {selectedPayment === "dinheiro" && (
+                <Card className="border-green-200 bg-green-50/50 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
+                  <CardContent className="p-5 text-center space-y-3">
+                    <div className="mx-auto w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
+                      <Bell className="w-7 h-7 text-green-600" />
+                    </div>
+                    <h4 className="font-bold text-green-800">Pagamento em Dinheiro</h4>
+                    <p className="text-sm text-green-700">
+                      O garçom virá até sua mesa para <strong>receber o pagamento</strong> e trazer o troco, se necessário.
+                    </p>
+                    <Badge className="bg-green-100 text-green-700 border-green-200 shadow-none">
+                      <Clock className="w-3 h-3 mr-1" /> Aguarde o garçom
+                    </Badge>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Pix — paga direto */}
+              {selectedPayment === "pix" && (
+                <Card className="border-purple-200 bg-purple-50/50 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
+                  <CardContent className="p-5 space-y-4">
+                    <div className="text-center space-y-2">
+                      <div className="mx-auto w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center">
+                        <QrCode className="w-7 h-7 text-purple-600" />
+                      </div>
+                      <h4 className="font-bold text-purple-800">Pague via Pix</h4>
+                      <p className="text-sm text-purple-700">
+                        Pague agora mesmo pelo seu celular. Copie a chave Pix abaixo:
+                      </p>
+                    </div>
+
+                    <Separator className="bg-purple-200" />
+
+                    {/* Pix key */}
+                    <div className="space-y-2">
+                      <p className="text-xs font-semibold text-purple-600 uppercase tracking-wide text-center">
+                        Chave Pix (E-mail)
+                      </p>
+                      <div className="flex items-center gap-2 bg-white border border-purple-200 rounded-lg px-4 py-3">
+                        <span className="flex-1 text-sm font-mono text-purple-900 truncate">{PIX_KEY}</span>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-purple-600 hover:bg-purple-100 shrink-0"
+                          onClick={copyPixKey}
+                        >
+                          {pixCopied ? (
+                            <CheckCircle2 className="w-4 h-4 mr-1 text-green-600" />
+                          ) : (
+                            <Copy className="w-4 h-4 mr-1" />
+                          )}
+                          {pixCopied ? "Copiado!" : "Copiar"}
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Beneficiary + Amount */}
+                    <div className="grid grid-cols-2 gap-3 text-center">
+                      <div className="bg-white border border-purple-200 rounded-lg p-3">
+                        <p className="text-[10px] text-purple-500 uppercase font-semibold">Beneficiário</p>
+                        <p className="text-xs font-bold text-purple-800 mt-1">{PIX_BENEFICIARY}</p>
+                      </div>
+                      <div className="bg-white border border-purple-200 rounded-lg p-3">
+                        <p className="text-[10px] text-purple-500 uppercase font-semibold">Valor</p>
+                        <p className="text-lg font-bold text-purple-800 mt-0.5">{formatBRL(billTotal)}</p>
+                      </div>
+                    </div>
+
+                    <div className="bg-purple-100/50 border border-purple-200 rounded-lg p-3 text-center">
+                      <p className="text-xs text-purple-700">
+                        Após o pagamento, o <strong>comprovante</strong> será confirmado automaticamente pelo garçom.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Request again / change */}
+              {selectedPayment && (selectedPayment === "cartao" || selectedPayment === "dinheiro") && (
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full h-14 text-base font-semibold rounded-2xl border-2"
+                  onClick={() => billMutation.mutate()}
+                  disabled={billMutation.isPending}
+                >
+                  {billMutation.isPending ? (
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  ) : (
+                    <Bell className="w-5 h-5 mr-2" />
+                  )}
+                  {billMutation.isPending ? "Chamando..." : "Chamar Garçom Novamente"}
+                </Button>
+              )}
             </div>
-          </div>
+          )}
         </div>
       </main>
     </CustomerShell>

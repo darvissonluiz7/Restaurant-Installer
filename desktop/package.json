@@ -1,0 +1,17 @@
+{
+  "name": "restopro-admin",
+  "version": "1.0.0",
+  "description": "RestoPro — Painel Admin Desktop",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "NODE_ENV=development electron ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^40.6.1"
+  }
+}
