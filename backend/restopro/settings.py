@@ -39,6 +39,11 @@ INSTALLED_APPS = [
     "acquirers",
 ]
 
+
+# Railway / reverse-proxy: trust X-Forwarded-Proto so Django builds https:// URLs
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
+
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
