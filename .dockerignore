@@ -1,0 +1,22 @@
+# Frontend build artifacts (rebuilt in Docker)
+frontend/node_modules/
+frontend/dist/
+
+# Backend virtual env & caches
+.venv/
+backend/venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/**/*.pyc
+backend/db.sqlite3
+backend/.env
+backend/staticfiles/
+
+# OS
+.DS_Store
+
+# Desktop (not needed in server)
+desktop/
+
+# Git
+.git/
