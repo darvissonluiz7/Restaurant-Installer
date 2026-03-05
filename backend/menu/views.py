@@ -61,7 +61,7 @@ def customer_menu_view(request, table_number):
             data["categories"].append({
                 "id": str(cat.id),
                 "name": cat.name,
-                "items": MenuItemListSerializer(items, many=True).data,
+                "items": MenuItemListSerializer(items, many=True, context={"request": request}).data,
             })
 
     return Response(data)
