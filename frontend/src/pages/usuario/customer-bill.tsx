@@ -44,6 +44,7 @@ export default function CustomerBill() {
   const [requested, setRequested] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState<PaymentMethod>(null);
   const [pixCopied, setPixCopied] = useState(false);
+  const [waiterCalled, setWaiterCalled] = useState(false);
 
   const billMutation = useMutation({
     mutationFn: () => api.customerRequestBill(tableNumber),
@@ -56,6 +57,29 @@ export default function CustomerBill() {
       toast({ title: "Erro", description: "Não foi possível solicitar a conta.", variant: "destructive" });
     },
   });
+
+  const callWaiterMutation = useMutation({
+    mutationFn: () => api.customerCallWaiter(tableNumber),
+    onSuccess: () => {
+      setWaiterCalled(true);
+      toast({ title: "Garçom Chamado! 🔔", description: "Um atendente virá até a sua mesa em breve." });
+    },
+    onError: (err: any) => {
+      const msg = err?.message?.includes("409")
+        ? "Já existe uma chamada pendente para sua mesa."
+        : "Não foi possível chamar o garçom.";
+      setWaiterCalled(true); // still show as called even if 409 (already pending)
+      toast({ title: "Aviso", description: msg, variant: "destructive" });
+    },
+  });
+
+  const handleSelectPayment = (method: PaymentMethod) => {
+    setSelectedPayment(method);
+    if (method === "cartao" || method === "dinheiro") {
+      setWaiterCalled(false);
+      callWaiterMutation.mutate();
+    }
+  };
 
   const billTotal = billData ? parseFloat(billData.total) : 0;
 
@@ -182,15 +206,15 @@ export default function CustomerBill() {
 
               <div className="grid grid-cols-3 gap-3">
                 {([
-                  { id: "cartao" as PaymentMethod, icon: CreditCard, label: "Cartão", color: "blue" },
-                  { id: "dinheiro" as PaymentMethod, icon: Banknote, label: "Dinheiro", color: "green" },
-                  { id: "pix" as PaymentMethod, icon: QrCode, label: "Pix", color: "purple" },
-                ]).map(({ id, icon: Icon, label, color }) => {
+                  { id: "pix" as PaymentMethod, icon: QrCode, label: "Pix", color: "purple", desc: "Pague agora" },
+                  { id: "cartao" as PaymentMethod, icon: CreditCard, label: "Cartão", color: "blue", desc: "Chamar garçom" },
+                  { id: "dinheiro" as PaymentMethod, icon: Banknote, label: "Dinheiro", color: "green", desc: "Chamar garçom" },
+                ]).map(({ id, icon: Icon, label, color, desc }) => {
                   const isSelected = selectedPayment === id;
                   return (
                     <button
                       key={id}
-                      onClick={() => setSelectedPayment(id)}
+                      onClick={() => handleSelectPayment(id)}
                       className={`rounded-xl border-2 p-4 flex flex-col items-center gap-2 transition-all ${
                         isSelected
                           ? `border-${color}-500 bg-${color}-50 shadow-md scale-[1.02]`
@@ -201,42 +225,73 @@ export default function CustomerBill() {
                       <span className={`text-sm font-semibold ${isSelected ? `text-${color}-700` : "text-muted-foreground"}`}>
                         {label}
                       </span>
+                      <span className={`text-[10px] ${isSelected ? `text-${color}-600` : "text-muted-foreground/70"}`}>
+                        {desc}
+                      </span>
                     </button>
                   );
                 })}
               </div>
 
-              {/* Cartão — garçom vem à mesa */}
+              {/* Cartão — garçom chamado automaticamente */}
               {selectedPayment === "cartao" && (
                 <Card className="border-blue-200 bg-blue-50/50 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
                   <CardContent className="p-5 text-center space-y-3">
                     <div className="mx-auto w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center">
-                      <Bell className="w-7 h-7 text-blue-600" />
+                      {callWaiterMutation.isPending ? (
+                        <Loader2 className="w-7 h-7 text-blue-600 animate-spin" />
+                      ) : (
+                        <Bell className="w-7 h-7 text-blue-600" />
+                      )}
                     </div>
                     <h4 className="font-bold text-blue-800">Pagamento com Cartão</h4>
                     <p className="text-sm text-blue-700">
-                      O garçom levará a <strong>maquininha</strong> até sua mesa para você pagar com cartão de crédito ou débito.
+                      {waiterCalled
+                        ? <>O garçom já foi <strong>chamado</strong> e levará a maquininha até sua mesa.</>
+                        : <>Chamando o garçom para levar a <strong>maquininha</strong> até sua mesa...</>}
                     </p>
-                    <Badge className="bg-blue-100 text-blue-700 border-blue-200 shadow-none">
-                      <Clock className="w-3 h-3 mr-1" /> Aguarde o garçom
+                    <Badge className={`shadow-none ${
+                      waiterCalled
+                        ? "bg-green-100 text-green-700 border-green-200"
+                        : "bg-blue-100 text-blue-700 border-blue-200"
+                    }`}>
+                      {waiterCalled ? (
+                        <><CheckCircle2 className="w-3 h-3 mr-1" /> Garçom chamado!</>
+                      ) : (
+                        <><Clock className="w-3 h-3 mr-1" /> Chamando garçom...</>
+                      )}
                     </Badge>
                   </CardContent>
                 </Card>
               )}
 
-              {/* Dinheiro — garçom vem à mesa */}
+              {/* Dinheiro — garçom chamado automaticamente */}
               {selectedPayment === "dinheiro" && (
                 <Card className="border-green-200 bg-green-50/50 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
                   <CardContent className="p-5 text-center space-y-3">
                     <div className="mx-auto w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
-                      <Bell className="w-7 h-7 text-green-600" />
+                      {callWaiterMutation.isPending ? (
+                        <Loader2 className="w-7 h-7 text-green-600 animate-spin" />
+                      ) : (
+                        <Bell className="w-7 h-7 text-green-600" />
+                      )}
                     </div>
                     <h4 className="font-bold text-green-800">Pagamento em Dinheiro</h4>
                     <p className="text-sm text-green-700">
-                      O garçom virá até sua mesa para <strong>receber o pagamento</strong> e trazer o troco, se necessário.
+                      {waiterCalled
+                        ? <>O garçom já foi <strong>chamado</strong> e virá até sua mesa para receber o pagamento.</>
+                        : <>Chamando o garçom para <strong>receber o pagamento</strong> na sua mesa...</>}
                     </p>
-                    <Badge className="bg-green-100 text-green-700 border-green-200 shadow-none">
-                      <Clock className="w-3 h-3 mr-1" /> Aguarde o garçom
+                    <Badge className={`shadow-none ${
+                      waiterCalled
+                        ? "bg-green-100 text-green-700 border-green-200"
+                        : "bg-yellow-100 text-yellow-700 border-yellow-200"
+                    }`}>
+                      {waiterCalled ? (
+                        <><CheckCircle2 className="w-3 h-3 mr-1" /> Garçom chamado!</>
+                      ) : (
+                        <><Clock className="w-3 h-3 mr-1" /> Chamando garçom...</>
+                      )}
                     </Badge>
                   </CardContent>
                 </Card>
@@ -302,21 +357,24 @@ export default function CustomerBill() {
                 </Card>
               )}
 
-              {/* Request again / change */}
-              {selectedPayment && (selectedPayment === "cartao" || selectedPayment === "dinheiro") && (
+              {/* Chamar garçom novamente — só cartão/dinheiro */}
+              {selectedPayment && (selectedPayment === "cartao" || selectedPayment === "dinheiro") && waiterCalled && (
                 <Button
                   size="lg"
                   variant="outline"
                   className="w-full h-14 text-base font-semibold rounded-2xl border-2"
-                  onClick={() => billMutation.mutate()}
-                  disabled={billMutation.isPending}
+                  onClick={() => {
+                    setWaiterCalled(false);
+                    callWaiterMutation.mutate();
+                  }}
+                  disabled={callWaiterMutation.isPending}
                 >
-                  {billMutation.isPending ? (
+                  {callWaiterMutation.isPending ? (
                     <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                   ) : (
                     <Bell className="w-5 h-5 mr-2" />
                   )}
-                  {billMutation.isPending ? "Chamando..." : "Chamar Garçom Novamente"}
+                  {callWaiterMutation.isPending ? "Chamando..." : "Chamar Garçom Novamente"}
                 </Button>
               )}
             </div>

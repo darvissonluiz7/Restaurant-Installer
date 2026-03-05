@@ -98,9 +98,9 @@ export default function CustomerMenu() {
           <p className="text-center text-muted-foreground py-12">Cardápio indisponível no momento.</p>
         ) : (
           <Tabs defaultValue={categories[0]?.name} className="w-full">
-            <TabsList className="w-full grid bg-secondary/50 p-1" style={{ gridTemplateColumns: `repeat(${Math.min(categories.length, 4)}, 1fr)` }}>
+            <TabsList className="w-full overflow-x-auto flex bg-secondary/50 p-1 justify-start">
               {categories.map(cat => (
-                <TabsTrigger key={cat.id} value={cat.name}>{cat.name}</TabsTrigger>
+                <TabsTrigger key={cat.id} value={cat.name} className="shrink-0">{cat.name}</TabsTrigger>
               ))}
             </TabsList>
 

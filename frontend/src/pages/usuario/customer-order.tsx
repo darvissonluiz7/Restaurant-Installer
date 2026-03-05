@@ -24,15 +24,6 @@ import {
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { api, formatBRL, type Order } from "@/lib/api";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import CustomerShell from "@/components/usuario/CustomerShell";
 
 // ── Cart item shape (from localStorage or parent) ───────────────────────
@@ -84,8 +75,6 @@ export default function CustomerOrder() {
   // Cart state from localStorage
   const [cart, setCartState] = useState<CartItem[]>(() => getCart(tableId || "0"));
   const [isCallingWaiter, setIsCallingWaiter] = useState(false);
-  const [showBillDialog, setShowBillDialog] = useState(false);
-  const [billData, setBillData] = useState<{ total: string; orders: Order[] } | null>(null);
 
   const updateCart = (newCart: CartItem[]) => {
     const filtered = newCart.filter(i => i.qty > 0);
@@ -146,17 +135,7 @@ export default function CustomerOrder() {
     },
   });
 
-  // Request bill mutation
-  const billMutation = useMutation({
-    mutationFn: () => api.customerRequestBill(tableNumber),
-    onSuccess: (data) => {
-      setBillData(data);
-      setShowBillDialog(true);
-    },
-    onError: () => {
-      toast({ title: "Erro", description: "Não foi possível solicitar a conta.", variant: "destructive" });
-    },
-  });
+
 
   const handleCallWaiter = () => {
     setIsCallingWaiter(true);
@@ -197,13 +176,10 @@ export default function CustomerOrder() {
           <Button
             variant="outline"
             className="h-16 flex-col gap-1.5 bg-card border-border/50 shadow-sm hover:border-green-300 hover:bg-green-50/50 transition-all"
-            onClick={() => billMutation.mutate()}
-            disabled={billMutation.isPending}
+            onClick={() => navigate(`/m/${tableId}/conta`)}
           >
-            <Receipt className={`w-5 h-5 ${billMutation.isPending ? "animate-pulse" : "text-green-600"}`} />
-            <span className="text-xs font-semibold">
-              {billMutation.isPending ? "Carregando..." : "Pedir Conta"}
-            </span>
+            <Receipt className="w-5 h-5 text-green-600" />
+            <span className="text-xs font-semibold">Pedir Conta</span>
           </Button>
         </div>
 
@@ -434,53 +410,6 @@ export default function CustomerOrder() {
         </div>
       )}
 
-      {/* ── Bill Dialog ───────────────────────────────────────────────── */}
-      <AlertDialog open={showBillDialog} onOpenChange={setShowBillDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <Receipt className="w-5 h-5 text-green-600" />
-              Conta Solicitada
-            </AlertDialogTitle>
-            <AlertDialogDescription asChild>
-              <div className="space-y-3 pt-2">
-                <p className="text-sm text-muted-foreground">
-                  O garçom trará a maquininha até a sua mesa.
-                </p>
-                {billData && (
-                  <>
-                    {billData.orders.length > 0 && (
-                      <div className="space-y-2 max-h-48 overflow-y-auto">
-                        {billData.orders.map(order => (
-                          <div key={order.id} className="text-sm border rounded-lg p-2.5 bg-secondary/30">
-                            <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                              <span>Pedido #{order.display_id}</span>
-                              <span>{order.status_display}</span>
-                            </div>
-                            {order.items.map(item => (
-                              <div key={item.id} className="flex justify-between text-xs">
-                                <span>{item.menu_item_emoji} {item.menu_item_name} x{item.quantity}</span>
-                                <span>{formatBRL(item.price)}</span>
-                              </div>
-                            ))}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    <div className="flex justify-between items-center pt-2 border-t">
-                      <span className="font-bold text-lg">Total</span>
-                      <span className="font-bold text-2xl text-primary">{formatBRL(billData.total)}</span>
-                    </div>
-                  </>
-                )}
-              </div>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction>Entendi</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </CustomerShell>
   );
 }

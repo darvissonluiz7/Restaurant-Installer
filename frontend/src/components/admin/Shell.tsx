@@ -1,18 +1,21 @@
 import { Link, useLocation } from "wouter";
-import { 
-  LayoutDashboard, 
-  UtensilsCrossed, 
-  ClipboardList, 
+import { useState } from "react";
+import {
+  LayoutDashboard,
+  UtensilsCrossed,
+  ClipboardList,
   Grid2X2,
+  Wallet,
   Settings,
   Bell,
   Search,
   Menu as MenuIcon,
-  LogOut
+  LogOut,
+  X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/use-auth";
 
 const navItems = [
@@ -20,11 +23,13 @@ const navItems = [
   { icon: ClipboardList, label: "Pedidos", href: "/admin/orders" },
   { icon: Grid2X2, label: "Mesas", href: "/admin/tables" },
   { icon: UtensilsCrossed, label: "Cardápio", href: "/admin/menu" },
+  { icon: Wallet, label: "Adquirentes", href: "/admin/acquirers" },
 ];
 
 export default function Shell({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const { user, logout } = useAuth();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const initials = user
     ? (user.first_name?.[0] ?? "") + (user.last_name?.[0] ?? user.username[0])
@@ -38,25 +43,36 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex h-screen bg-secondary/20 overflow-hidden">
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-20 bg-black/40 md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="hidden md:flex w-64 flex-col bg-card border-r border-border/50 shadow-sm z-10">
-        <div className="h-16 flex items-center px-6 border-b border-border/50">
+      <aside className={`fixed md:static inset-y-0 left-0 z-30 w-64 flex flex-col bg-card border-r border-border/50 shadow-sm transition-transform duration-300 md:translate-x-0 ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
+        <div className="h-16 flex items-center justify-between px-6 border-b border-border/50">
           <div className="flex items-center gap-2 text-primary font-display font-bold text-xl">
             <UtensilsCrossed className="w-6 h-6" />
             RestoPro
           </div>
+          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setMobileOpen(false)}>
+            <X className="w-5 h-5" />
+          </Button>
         </div>
         
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
             const isActive = location === item.href;
             return (
-              <Link key={item.href} href={item.href}>
-                <div 
+              <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)}>
+                <div
                   data-testid={`nav-${item.label.toLowerCase()}`}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200 group ${
-                    isActive 
-                      ? "bg-primary text-primary-foreground shadow-md shadow-primary/20" 
+                    isActive
+                      ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
                       : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                   }`}
                 >
@@ -88,7 +104,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         {/* Topbar */}
         <header className="h-16 bg-card border-b border-border/50 flex items-center justify-between px-4 sm:px-6 shadow-sm z-10">
           <div className="flex items-center gap-4 flex-1">
-            <Button variant="ghost" size="icon" className="md:hidden">
+            <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setMobileOpen(true)}>
               <MenuIcon className="w-5 h-5" />
             </Button>
             

@@ -50,7 +50,7 @@ export default function Dashboard() {
           <h1 className="text-3xl font-display font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground mt-1">Bem-vindo de volta, aqui está o resumo de hoje.</p>
         </div>
-        <Button className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25" onClick={() => setLocation("/orders")}>
+        <Button className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25" onClick={() => setLocation("/admin/orders")}>
           + Novo Pedido
         </Button>
       </div>
@@ -79,7 +79,7 @@ export default function Dashboard() {
                 <CardTitle>Pedidos Recentes</CardTitle>
                 <CardDescription>Acompanhe o fluxo da cozinha em tempo real.</CardDescription>
               </div>
-              <Button variant="outline" size="sm" onClick={() => setLocation("/orders")}>Ver todos</Button>
+              <Button variant="outline" size="sm" onClick={() => setLocation("/admin/orders")}>Ver todos</Button>
             </div>
           </CardHeader>
           <CardContent>

@@ -13,6 +13,7 @@ import Orders from "@/pages/admin/orders";
 import Menu from "@/pages/admin/menu";
 import Tables from "@/pages/admin/tables";
 import Login from "@/pages/admin/login";
+import Acquirers from "@/pages/admin/acquirers";
 import CustomerMenu from "@/pages/usuario/customer-menu";
 import CustomerOrder from "@/pages/usuario/customer-order";
 import CustomerWaiter from "@/pages/usuario/customer-waiter";
@@ -22,6 +23,7 @@ import CustomerLoyalty from "@/pages/usuario/customer-loyalty";
 import CustomerAbout from "@/pages/usuario/customer-about";
 import CustomerContact from "@/pages/usuario/customer-contact";
 import SelectTable from "@/pages/usuario/select-table";
+import LandingPage from "@/pages/landing";
 
 /** Wrapper that protects admin routes — redirects to /login if unauthenticated */
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -65,8 +67,11 @@ function GuestRoute({ children }: { children: React.ReactNode }) {
 function Router() {
   return (
     <Switch>
+      {/* Landing page */}
+      <Route path="/" component={LandingPage} />
+
       {/* Customer routes */}
-      <Route path="/" component={SelectTable} />
+      <Route path="/mesa" component={SelectTable} />
       <Route path="/m/:tableId" component={CustomerMenu} />
       <Route path="/m/:tableId/pedido" component={CustomerOrder} />
       <Route path="/m/:tableId/garcom" component={CustomerWaiter} />
@@ -91,6 +96,9 @@ function Router() {
       </Route>
       <Route path="/admin/tables">
         <ProtectedRoute><Shell><Tables /></Shell></ProtectedRoute>
+      </Route>
+      <Route path="/admin/acquirers">
+        <ProtectedRoute><Shell><Acquirers /></Shell></ProtectedRoute>
       </Route>
 
       <Route component={NotFound} />

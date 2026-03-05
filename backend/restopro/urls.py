@@ -33,6 +33,14 @@ def spa_view(request, path=""):
 urlpatterns = [
     path("django-admin/", admin.site.urls),
     path("api/", include("core.urls")),
+    path("api/", include("menu.urls")),
+    path("api/", include("tables.urls")),
+    path("api/", include("orders.urls")),
+    path("api/", include("waiter.urls")),
+    path("api/", include("restaurant.urls")),
+    path("api/", include("reviews.urls")),
+    path("api/", include("loyalty.urls")),
+    path("api/", include("acquirers.urls")),
 ]
 
 # Serve media files

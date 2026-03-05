@@ -29,6 +29,14 @@ INSTALLED_APPS = [
     "corsheaders",
     # Local
     "core",
+    "menu",
+    "tables",
+    "orders",
+    "waiter",
+    "restaurant",
+    "reviews",
+    "loyalty",
+    "acquirers",
 ]
 
 MIDDLEWARE = [
