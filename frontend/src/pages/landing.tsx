@@ -182,14 +182,16 @@ function PricingCard({
             </li>
           ))}
         </ul>
-        <Button
-          className={`w-full rounded-xl ${
-            highlighted ? "" : "bg-secondary text-secondary-foreground hover:bg-primary hover:text-white"
-          }`}
-          size="lg"
-        >
-          Começar agora
-        </Button>
+        <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="w-full">
+          <Button
+            className={`w-full rounded-xl ${
+              highlighted ? "" : "bg-secondary text-secondary-foreground hover:bg-primary hover:text-white"
+            }`}
+            size="lg"
+          >
+            Começar agora
+          </Button>
+        </a>
       </motion.div>
     </FadeIn>
   );
@@ -233,6 +235,8 @@ function TestimonialCard({
 /* ═══════════════════════════════════════════════════════════════ */
 /*                      LANDING PAGE                              */
 /* ═══════════════════════════════════════════════════════════════ */
+
+const WHATSAPP_URL = "https://wa.me/5511999999999?text=Ol%C3%A1!%20Tenho%20interesse%20no%20sistema%20Rango%20para%20meu%20restaurante.";
 
 export default function LandingPage() {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -285,16 +289,16 @@ export default function LandingPage() {
           </nav>
 
           <div className="hidden md:flex items-center gap-3">
-            <Link href="/admin/login">
+            <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
               <Button variant="ghost" size="sm">
                 Entrar
               </Button>
-            </Link>
-            <Link href="/admin/login">
+            </a>
+            <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
               <Button size="sm" className="rounded-full px-5">
                 Teste Grátis
               </Button>
-            </Link>
+            </a>
           </div>
 
           {/* Mobile hamburger */}
@@ -323,12 +327,12 @@ export default function LandingPage() {
                 <a href="#depoimentos" onClick={() => setMobileOpen(false)} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Depoimentos</a>
                 <a href="#contato" onClick={() => setMobileOpen(false)} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Contato</a>
                 <div className="flex gap-3 pt-2">
-                  <Link href="/admin/login" className="flex-1">
+                  <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="flex-1">
                     <Button variant="outline" className="w-full">Entrar</Button>
-                  </Link>
-                  <Link href="/admin/login" className="flex-1">
+                  </a>
+                  <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="flex-1">
                     <Button className="w-full">Teste Grátis</Button>
-                  </Link>
+                  </a>
                 </div>
               </div>
             </motion.div>
@@ -389,12 +393,12 @@ export default function LandingPage() {
 
             <FadeIn delay={0.3}>
               <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link href="/admin/login">
+                <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
                   <Button size="lg" className="rounded-full px-8 text-base shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-shadow">
                     Começar Gratuitamente
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
-                </Link>
+                </a>
                 <a href="#funcionalidades">
                   <Button variant="outline" size="lg" className="rounded-full px-8 text-base">
                     Ver Funcionalidades
@@ -937,7 +941,7 @@ export default function LandingPage() {
           </FadeIn>
           <FadeIn delay={0.2}>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/admin/login">
+              <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
                 <Button
                   size="lg"
                   className="rounded-full px-10 text-base shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-shadow"
@@ -945,7 +949,7 @@ export default function LandingPage() {
                   Começar Grátis Agora
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-              </Link>
+              </a>
               <a href="#contato">
                 <Button variant="outline" size="lg" className="rounded-full px-8 text-base">
                   Falar com vendas

@@ -1,26 +1,37 @@
 /**
- * Detecta o ambiente e define a base URL da API.
+ * Detecta automaticamente se o sistema está rodando em LOCAL ou PRODUÇÃO
+ * e define a base URL da API.
  *
- * - Desenvolvimento (localhost): usa o proxy do Vite → ""
- * - Produção (Railway, etc.): usa a mesma origem → ""
- * - Se precisar apontar para outro servidor, defina VITE_API_URL no .env
+ * Regra:
+ *  - localhost / 127.0.0.1  → LOCAL  (usa proxy do Vite em dev ou Django direto)
+ *  - qualquer outro host     → PRODUÇÃO (mesma origem)
+ *  - Variável VITE_API_URL   → sobrescreve tudo (para apontar para outro servidor)
  *
- * Uso:  import { API_BASE } from "@/lib/env";
+ * Uso:
+ *   import { API_BASE, IS_LOCAL, ENV } from "@/lib/env";
  */
 
-const isDev = import.meta.env.DEV;
-const isProd = import.meta.env.PROD;
+const hostname = typeof window !== "undefined" ? window.location.hostname : "";
 
-/** URL base da API (sem barra final) */
+/** true quando rodando localmente */
+export const IS_LOCAL: boolean =
+  hostname === "localhost" || hostname === "127.0.0.1";
+
+/** "local" | "production" */
+export const ENV: "local" | "production" = IS_LOCAL ? "local" : "production";
+
+/**
+ * URL base da API (sem barra final).
+ *
+ * - Em LOCAL:       "" (usa o proxy do Vite → http://127.0.0.1:8000)
+ * - Em PRODUÇÃO:    "" (front e back servidos na mesma origem)
+ * - VITE_API_URL:   sobrescreve os dois acima se definido no .env
+ */
 export const API_BASE: string =
   import.meta.env.VITE_API_URL?.replace(/\/+$/, "") ?? "";
 
-/** Ambiente atual */
-export const ENV = isDev ? "development" : "production";
-
 /** Atalho: monta a URL completa de um endpoint da API */
 export function apiUrl(path: string): string {
-  // garante que o path comece com /
   const normalised = path.startsWith("/") ? path : `/${path}`;
   return `${API_BASE}${normalised}`;
 }

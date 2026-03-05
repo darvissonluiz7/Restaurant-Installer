@@ -31,7 +31,7 @@ export function useAuth() {
       api.login(username, password),
     onSuccess: (data) => {
       queryClient.setQueryData(["/api/auth/me/"], data);
-      setLocation("/");
+      setLocation("/admin");
     },
   });
 
@@ -40,7 +40,7 @@ export function useAuth() {
     onSuccess: () => {
       queryClient.setQueryData(["/api/auth/me/"], null);
       queryClient.clear();
-      setLocation("/login");
+      setLocation("/admin/login");
     },
   });
 

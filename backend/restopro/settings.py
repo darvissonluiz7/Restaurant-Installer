@@ -115,7 +115,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # CORS — allow the frontend dev server
 CORS_ALLOWED_ORIGINS = os.getenv(
     "CORS_ALLOWED_ORIGINS",
-    "http://localhost:5173,http://localhost:5174,http://localhost:3000,http://localhost:5000",
+    "http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:3000,http://localhost:5000",
 ).split(",")
 CORS_ALLOW_CREDENTIALS = True
 
@@ -142,5 +142,5 @@ SESSION_COOKIE_SECURE = not DEBUG
 # Ensure cookie is sent cross-origin for dev proxy
 CSRF_TRUSTED_ORIGINS = os.getenv(
     "CSRF_TRUSTED_ORIGINS",
-    "http://localhost:5173,http://localhost:5174,http://localhost:3000,http://localhost:5000,http://127.0.0.1:5173,http://127.0.0.1:5174",
+    "http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:3000,http://localhost:5000,http://127.0.0.1:5173,http://127.0.0.1:5174,http://127.0.0.1:5175",
 ).split(",")
