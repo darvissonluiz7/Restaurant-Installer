@@ -6,5 +6,6 @@ router = DefaultRouter()
 router.register(r"tables", views.TableViewSet)
 
 urlpatterns = [
+    path("tables/public/", views.public_tables),
     path("", include(router.urls)),
 ]

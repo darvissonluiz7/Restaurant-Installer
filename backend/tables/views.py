@@ -1,9 +1,17 @@
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from rest_framework import viewsets, status, permissions
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 
 from .models import Table
 from .serializers import TableSerializer
+
+
+@api_view(["GET"])
+@permission_classes([permissions.AllowAny])
+def public_tables(request):
+    """GET /api/tables/public/ — lista todas as mesas sem autenticação."""
+    tables = Table.objects.all().order_by("number")
+    return Response(TableSerializer(tables, many=True).data)
 
 
 class TableViewSet(viewsets.ModelViewSet):

@@ -289,11 +289,11 @@ export default function LandingPage() {
           </nav>
 
           <div className="hidden md:flex items-center gap-3">
-            <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+            <Link href="/mesa">
               <Button variant="ghost" size="sm">
                 Entrar
               </Button>
-            </a>
+            </Link>
             <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
               <Button size="sm" className="rounded-full px-5">
                 Teste Grátis
@@ -327,9 +327,9 @@ export default function LandingPage() {
                 <a href="#depoimentos" onClick={() => setMobileOpen(false)} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Depoimentos</a>
                 <a href="#contato" onClick={() => setMobileOpen(false)} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Contato</a>
                 <div className="flex gap-3 pt-2">
-                  <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="flex-1">
+                  <Link href="/mesa" className="flex-1" onClick={() => setMobileOpen(false)}>
                     <Button variant="outline" className="w-full">Entrar</Button>
-                  </a>
+                  </Link>
                   <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="flex-1">
                     <Button className="w-full">Teste Grátis</Button>
                   </a>

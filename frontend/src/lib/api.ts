@@ -254,6 +254,13 @@ export const api = {
     return res.json();
   },
 
+  // ── Public ────────────────────────────────────────────────────────
+  getPublicTables: async (): Promise<Table[]> => {
+    const res = await fetch(`${BASE}/tables/public/`);
+    if (!res.ok) throw new Error("Erro ao carregar mesas");
+    return res.json();
+  },
+
   // ── Customer ───────────────────────────────────────────────────────
   getCustomerMenu: async (tableNumber: number): Promise<CustomerMenuData> => {
     const res = await fetch(`${BASE}/customer/${tableNumber}/menu/`);

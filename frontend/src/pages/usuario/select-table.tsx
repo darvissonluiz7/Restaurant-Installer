@@ -1,19 +1,28 @@
-import { useState } from "react";
 import { useLocation } from "wouter";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import { UtensilsCrossed, QrCode, ArrowRight } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { api, type Table } from "@/lib/api";
+import { UtensilsCrossed, Users, Loader2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+
+const statusConfig: Record<Table["status"], { label: string; color: string; available: boolean }> = {
+  free:     { label: "Livre",     color: "bg-green-500/10 border-green-500/40 text-green-700 hover:bg-green-500/20",  available: true },
+  occupied: { label: "Ocupada",   color: "bg-red-500/10 border-red-400/40 text-red-600 cursor-not-allowed opacity-60", available: false },
+  reserved: { label: "Reservada", color: "bg-blue-500/10 border-blue-400/40 text-blue-600 cursor-not-allowed opacity-60", available: false },
+  cleaning: { label: "Limpeza",   color: "bg-orange-500/10 border-orange-400/40 text-orange-600 cursor-not-allowed opacity-60", available: false },
+};
 
 export default function SelectTable() {
   const [, navigate] = useLocation();
-  const [tableNumber, setTableNumber] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const num = parseInt(tableNumber);
-    if (num && num > 0) {
-      navigate(`/m/${num}`);
+  const { data: tables, isLoading, isError } = useQuery({
+    queryKey: ["public-tables"],
+    queryFn: api.getPublicTables,
+    refetchInterval: 15_000,
+  });
+
+  const handleSelect = (table: Table) => {
+    if (statusConfig[table.status].available) {
+      navigate(`/m/${table.number}`);
     }
   };
 
@@ -28,61 +37,71 @@ export default function SelectTable() {
       </header>
 
       {/* Main content */}
-      <main className="flex-1 flex items-center justify-center px-4 pb-12">
-        <div className="w-full max-w-sm space-y-8">
+      <main className="flex-1 flex flex-col items-center px-4 pb-12 pt-4">
+        <div className="w-full max-w-2xl space-y-6">
           {/* Welcome text */}
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-display font-bold tracking-tight">
-              Bem-vindo!
+              Escolha sua mesa
             </h1>
             <p className="text-muted-foreground">
-              Digite o número da sua mesa para acessar o cardápio digital.
+              Selecione uma mesa disponível para acessar o cardápio.
             </p>
           </div>
 
-          {/* Table number form */}
-          <Card className="border-border/50 shadow-lg">
-            <CardContent className="p-6">
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <label
-                    htmlFor="table-number"
-                    className="text-sm font-medium text-foreground"
+          {/* Legend */}
+          <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground flex-wrap">
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-green-500 inline-block" /> Livre</span>
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-red-500 inline-block" /> Ocupada</span>
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-blue-500 inline-block" /> Reservada</span>
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-orange-500 inline-block" /> Limpeza</span>
+          </div>
+
+          {/* Tables grid */}
+          {isLoading ? (
+            <div className="flex justify-center py-16">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+          ) : isError ? (
+            <p className="text-center text-muted-foreground py-16">
+              Não foi possível carregar as mesas. Tente novamente.
+            </p>
+          ) : !tables?.length ? (
+            <p className="text-center text-muted-foreground py-16">
+              Nenhuma mesa cadastrada ainda.
+            </p>
+          ) : (
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+              {tables.map((table) => {
+                const cfg = statusConfig[table.status];
+                return (
+                  <button
+                    key={table.id}
+                    onClick={() => handleSelect(table)}
+                    disabled={!cfg.available}
+                    className={`
+                      relative flex flex-col items-center justify-center gap-1.5
+                      rounded-xl border-2 p-4 transition-all duration-150
+                      ${cfg.color}
+                      ${cfg.available ? "cursor-pointer active:scale-95" : ""}
+                    `}
                   >
-                    Número da Mesa
-                  </label>
-                  <Input
-                    id="table-number"
-                    type="number"
-                    min="1"
-                    inputMode="numeric"
-                    placeholder="Ex: 5"
-                    value={tableNumber}
-                    onChange={(e) => setTableNumber(e.target.value)}
-                    className="h-14 text-center text-2xl font-bold tracking-wider"
-                    autoFocus
-                    required
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  className="w-full h-12 text-base font-semibold"
-                  disabled={!tableNumber || parseInt(tableNumber) < 1}
-                >
-                  Acessar Cardápio
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-
-          {/* QR code hint */}
-          <div className="flex items-center gap-3 justify-center text-muted-foreground text-sm">
-            <QrCode className="w-5 h-5 shrink-0" />
-            <p>
-              Você também pode escanear o <strong className="text-foreground">QR Code</strong> na sua mesa para entrar direto.
-            </p>
-          </div>
+                    <span className="text-2xl font-bold">{table.number}</span>
+                    <div className="flex items-center gap-1 text-xs opacity-70">
+                      <Users className="w-3 h-3" />
+                      <span>{table.capacity}</span>
+                    </div>
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] px-1.5 py-0 mt-0.5 border-current"
+                    >
+                      {cfg.label}
+                    </Badge>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       </main>
 

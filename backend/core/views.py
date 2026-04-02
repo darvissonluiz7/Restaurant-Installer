@@ -6,6 +6,7 @@ from django.middleware.csrf import get_token
 from django.utils import timezone
 from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework import permissions, status
+from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
@@ -38,7 +39,11 @@ def login_view(request):
     if user is None:
         return Response({"detail": "Credenciais invalidas."}, status=status.HTTP_401_UNAUTHORIZED)
     login(request, user)
-    return Response(UserSerializer(user).data)
+    # Create or get DRF auth token for mobile clients
+    token, _ = Token.objects.get_or_create(user=user)
+    data = UserSerializer(user).data
+    data["token"] = token.key
+    return Response(data)
 
 
 @api_view(["POST"])
