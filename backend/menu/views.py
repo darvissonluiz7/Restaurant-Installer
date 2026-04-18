@@ -1,4 +1,5 @@
-from rest_framework import viewsets, permissions
+from django.db import models as db_models
+from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.response import Response
@@ -13,6 +14,17 @@ class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
+    def destroy(self, request, *args, **kwargs):
+        try:
+            return super().destroy(request, *args, **kwargs)
+        except Exception as e:
+            if "ProtectedError" in type(e).__name__ or "PROTECT" in str(e):
+                return Response(
+                    {"detail": "Esta categoria possui produtos vinculados. Remova os produtos primeiro."},
+                    status=status.HTTP_409_CONFLICT,
+                )
+            raise
+
 
 class MenuItemViewSet(viewsets.ModelViewSet):
     queryset = MenuItem.objects.select_related("category").all()
@@ -22,6 +34,17 @@ class MenuItemViewSet(viewsets.ModelViewSet):
         if self.action == "list":
             return MenuItemListSerializer
         return MenuItemSerializer
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            return super().destroy(request, *args, **kwargs)
+        except Exception as e:
+            if "ProtectedError" in type(e).__name__ or "PROTECT" in str(e):
+                return Response(
+                    {"detail": "Este produto possui pedidos vinculados e não pode ser excluído. Você pode desativá-lo em vez de excluir."},
+                    status=status.HTTP_409_CONFLICT,
+                )
+            raise
 
     def get_queryset(self):
         qs = super().get_queryset()
