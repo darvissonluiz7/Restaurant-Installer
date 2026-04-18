@@ -40,7 +40,7 @@ class MenuItem(models.Model):
         related_name="items",
         verbose_name="Categoria",
     )
-    image = models.ImageField("Imagem", upload_to=menu_image_upload, blank=True, null=True)
+    image = models.ImageField("Imagem", upload_to=menu_image_upload, blank=True, null=True, max_length=500)
     emoji = models.CharField("Emoji", max_length=10, blank=True, default="🍽️")
     status = models.CharField(
         "Status",
