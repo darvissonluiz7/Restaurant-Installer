@@ -132,9 +132,6 @@ def ai_generate_dish(request):
         return Response({"detail": "Nome do prato é obrigatório."}, status=status.HTTP_400_BAD_REQUEST)
 
     api_key = os.getenv("GROQ_API_KEY")
-    print(f"[AI] GROQ_API_KEY presente: {bool(api_key)}", flush=True)
-    print(f"[AI] Total de env vars: {len(os.environ)}", flush=True)
-    print(f"[AI] Todas as env vars (nomes): {sorted(os.environ.keys())}", flush=True)
     if not api_key:
         return Response({"detail": "GROQ_API_KEY não configurada."}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
