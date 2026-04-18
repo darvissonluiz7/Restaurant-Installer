@@ -70,7 +70,7 @@ function SidebarContent({
           <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
             <UtensilsCrossed className="w-5 h-5" />
           </div>
-          RestoPro
+          Zenny Food
         </div>
         <div className="mt-3 flex items-center gap-2">
           <Badge variant="outline" className="font-mono text-xs bg-primary/5 text-primary border-primary/20 px-2.5 py-1">

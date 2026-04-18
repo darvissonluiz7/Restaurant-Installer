@@ -816,7 +816,7 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <TestimonialCard
-              quote="Depois que implementamos o RestoPro, nossos pedidos ficaram organizados e o faturamento aumentou 35%. A facilidade do QR Code é impressionante!"
+              quote="Depois que implementamos o Zenny Food, nossos pedidos ficaram organizados e o faturamento aumentou 35%. A facilidade do QR Code é impressionante!"
               name="Carlos Silva"
               role="Dono do Sabor & Arte Restaurante"
               delay={0}
@@ -864,8 +864,8 @@ export default function LandingPage() {
             <Accordion type="single" collapsible className="space-y-3">
               {[
                 {
-                  q: "Preciso instalar algum aplicativo para usar o RestoPro?",
-                  a: "Não! O RestoPro funciona totalmente no navegador, tanto para o painel administrativo quanto para o cardápio digital dos clientes. Basta acessar a URL — sem instalação, sem app na App Store.",
+                  q: "Preciso instalar algum aplicativo para usar o Zenny Food?",
+                  a: "Não! O Zenny Food funciona totalmente no navegador, tanto para o painel administrativo quanto para o cardápio digital dos clientes. Basta acessar a URL — sem instalação, sem app na App Store.",
                 },
                 {
                   q: "Como os clientes fazem pedidos?",
@@ -884,7 +884,7 @@ export default function LandingPage() {
                   a: "Conecte um adquirente de pagamentos (como o Mercado Pago) no painel de Adquirentes. Depois disso, seus clientes poderão pagar via Pix, cartão de crédito ou débito diretamente pelo cardápio, sem precisar chamar o garçom.",
                 },
                 {
-                  q: "Posso migrar meu cardápio atual para o RestoPro?",
+                  q: "Posso migrar meu cardápio atual para o Zenny Food?",
                   a: "Sim! Você pode cadastrar os itens manualmente pelo painel. Nossa equipe também oferece suporte para ajudar na migração caso tenha um cardápio grande. Entre em contato pelo chat.",
                 },
                 {
@@ -935,7 +935,7 @@ export default function LandingPage() {
           </FadeIn>
           <FadeIn delay={0.1}>
             <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground">
-              Junte-se a mais de 2.500 restaurantes que já usam o RestoPro.
+              Junte-se a mais de 2.500 restaurantes que já usam o Zenny Food.
               Comece hoje mesmo — é grátis!
             </p>
           </FadeIn>
@@ -1166,7 +1166,7 @@ export default function LandingPage() {
           </div>
           <div className="border-t border-border/30 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} RestoPro. Todos os direitos reservados.
+              © {new Date().getFullYear()} Zenny Food. Todos os direitos reservados.
             </p>
             <div className="flex items-center gap-4 text-muted-foreground">
               <a href="#" className="hover:text-foreground transition-colors">

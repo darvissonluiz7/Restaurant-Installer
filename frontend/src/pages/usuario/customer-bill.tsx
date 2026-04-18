@@ -35,7 +35,7 @@ type PaymentMethod = "cartao" | "dinheiro" | "pix" | null;
 
 // Pix key do restaurante — pode ser configurado
 const PIX_KEY = "restopro@email.com";
-const PIX_BENEFICIARY = "RestoPro Restaurante";
+const PIX_BENEFICIARY = "Zenny Food Restaurante";
 
 export default function CustomerBill() {
   const { tableId } = useParams();

@@ -56,7 +56,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         <div className="h-16 flex items-center justify-between px-6 border-b border-border/50">
           <div className="flex items-center gap-2 text-primary font-display font-bold text-xl">
             <UtensilsCrossed className="w-6 h-6" />
-            RestoPro
+            Zenny Food
           </div>
           <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setMobileOpen(false)}>
             <X className="w-5 h-5" />

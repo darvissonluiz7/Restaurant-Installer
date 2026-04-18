@@ -32,7 +32,7 @@ export default function SelectTable() {
       <header className="px-6 py-5 flex items-center justify-center">
         <div className="flex items-center gap-2 text-primary font-bold text-2xl">
           <UtensilsCrossed className="w-7 h-7" />
-          <span className="font-display">RestoPro</span>
+          <span className="font-display">Zenny Food</span>
         </div>
       </header>
 
@@ -107,7 +107,7 @@ export default function SelectTable() {
 
       {/* Footer */}
       <footer className="px-6 py-4 text-center text-xs text-muted-foreground">
-        Powered by RestoPro
+        Powered by Zenny Food
       </footer>
     </div>
   );

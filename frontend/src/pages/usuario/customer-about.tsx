@@ -15,7 +15,7 @@ export default function CustomerAbout() {
               <div className="w-16 h-16 mx-auto rounded-2xl bg-white shadow-lg flex items-center justify-center mb-3">
                 <Utensils className="w-8 h-8 text-primary" />
               </div>
-              <h1 className="text-2xl font-bold">RestoPro</h1>
+              <h1 className="text-2xl font-bold">Zenny Food</h1>
               <p className="text-sm text-muted-foreground mt-1">Gastronomia com tecnologia</p>
             </div>
           </div>

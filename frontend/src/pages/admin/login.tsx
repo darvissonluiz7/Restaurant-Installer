@@ -29,7 +29,7 @@ export default function Login() {
         <div className="flex justify-center mb-8">
           <div className="flex items-center gap-2 text-primary font-display font-bold text-3xl">
             <UtensilsCrossed className="w-8 h-8" />
-            RestoPro
+            Zenny Food
           </div>
         </div>
 
@@ -88,7 +88,7 @@ export default function Login() {
         </Card>
 
         <p className="text-center text-sm text-muted-foreground mt-8">
-          &copy; 2026 RestoPro Systems. Todos os direitos reservados.
+          &copy; 2026 Zenny Food Systems. Todos os direitos reservados.
         </p>
       </div>
     </div>
