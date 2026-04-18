@@ -72,7 +72,9 @@ class OrderItem(models.Model):
     )
     menu_item = models.ForeignKey(
         "menu.MenuItem",
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         related_name="order_items",
         verbose_name="Item do Cardápio",
     )
@@ -91,4 +93,5 @@ class OrderItem(models.Model):
         verbose_name_plural = "Itens do Pedido"
 
     def __str__(self):
-        return f"{self.quantity}x {self.menu_item.name}"
+        name = self.menu_item.name if self.menu_item else "(removido)"
+        return f"{self.quantity}x {name}"
