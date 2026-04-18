@@ -20,7 +20,7 @@ export const IS_LOCAL: boolean =
 /** "local" | "production" */
 export const ENV: "local" | "production" = IS_LOCAL ? "local" : "production";
 
-const PRODUCTION_API = "https://api.mercatusads.com.br";
+const PRODUCTION_API = "https://restaurant-installer.fly.dev";
 
 /**
  * URL base da API (sem barra final).
