@@ -163,7 +163,11 @@ def ai_generate_dish(request):
             "price": str(data.get("price", "")),
             "emoji": str(data.get("emoji", "🍽️")),
         })
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as e:
+        print(f"[AI] JSONDecodeError: {e} | texto recebido: {text!r}", flush=True)
         return Response({"detail": "IA retornou formato inválido."}, status=status.HTTP_502_BAD_GATEWAY)
     except Exception as e:
+        import traceback
+        print(f"[AI] Erro: {type(e).__name__}: {e}", flush=True)
+        traceback.print_exc()
         return Response({"detail": str(e)}, status=status.HTTP_502_BAD_GATEWAY)

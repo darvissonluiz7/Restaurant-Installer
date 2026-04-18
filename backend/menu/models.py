@@ -1,5 +1,11 @@
 import uuid
+import os
 from django.db import models
+
+
+def menu_image_upload(instance, filename):
+    ext = os.path.splitext(filename)[1].lower() or ".jpg"
+    return f"menu/{uuid.uuid4().hex}{ext}"
 
 
 class Category(models.Model):
@@ -34,7 +40,7 @@ class MenuItem(models.Model):
         related_name="items",
         verbose_name="Categoria",
     )
-    image = models.ImageField("Imagem", upload_to="menu/", blank=True, null=True)
+    image = models.ImageField("Imagem", upload_to=menu_image_upload, blank=True, null=True)
     emoji = models.CharField("Emoji", max_length=10, blank=True, default="🍽️")
     status = models.CharField(
         "Status",
