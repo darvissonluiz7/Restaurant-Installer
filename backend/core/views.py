@@ -1,3 +1,7 @@
+import json
+import os
+import json
+import os
 from decimal import Decimal
 
 from django.contrib.auth import authenticate, login, logout
@@ -117,3 +121,49 @@ def dashboard_view(request):
         "popular_items": popular_items,
         "recent_orders": OrderSerializer(recent_orders, many=True).data,
     })
+
+
+# ── AI ────────────────────────────────────────────────────────────────────────
+
+@api_view(["POST"])
+def ai_generate_dish(request):
+    name = (request.data.get("name") or "").strip()
+    if not name:
+        return Response({"detail": "Nome do prato é obrigatório."}, status=status.HTTP_400_BAD_REQUEST)
+
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key:
+        return Response({"detail": "GROQ_API_KEY não configurada."}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+    try:
+        from groq import Groq
+        client = Groq(api_key=api_key)
+        completion = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            max_tokens=200,
+            messages=[{
+                "role": "user",
+                "content": (
+                    f'Gere informações para um prato de restaurante chamado "{name}". '
+                    'Responda APENAS com JSON válido neste formato (sem markdown, sem explicação): '
+                    '{"description": "descrição apetitosa em até 2 frases", "price": 00.00, "emoji": "🍽️"} '
+                    'O preço deve ser um número realista em reais brasileiros.'
+                ),
+            }],
+        )
+        text = completion.choices[0].message.content.strip()
+        # remove markdown code block if present
+        if text.startswith("```"):
+            text = text.split("```")[1]
+            if text.startswith("json"):
+                text = text[4:]
+        data = json.loads(text)
+        return Response({
+            "description": str(data.get("description", "")),
+            "price": str(data.get("price", "")),
+            "emoji": str(data.get("emoji", "🍽️")),
+        })
+    except json.JSONDecodeError:
+        return Response({"detail": "IA retornou formato inválido."}, status=status.HTTP_502_BAD_GATEWAY)
+    except Exception as e:
+        return Response({"detail": str(e)}, status=status.HTTP_502_BAD_GATEWAY)

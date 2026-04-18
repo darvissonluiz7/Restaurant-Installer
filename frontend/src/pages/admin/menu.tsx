@@ -32,6 +32,7 @@ import {
   AlertTriangle,
   ImagePlus,
   X,
+  Sparkles,
 } from "lucide-react";
 import {
   api,
@@ -149,6 +150,28 @@ export default function Menu() {
     onSuccess: () => { invalidate(); setDeleteItemTarget(null); toast({ title: "Produto removido!" }); },
     onError: (e: Error) => toast({ title: "Erro ao excluir", description: e.message, variant: "destructive" }),
   });
+
+  const [aiLoading, setAiLoading] = useState(false);
+  const handleAiGenerate = async () => {
+    if (!editingItem.name.trim()) {
+      toast({ title: "Digite o nome do prato primeiro.", variant: "destructive" });
+      return;
+    }
+    setAiLoading(true);
+    try {
+      const result = await api.aiGenerateDish(editingItem.name);
+      setEditingItem((prev) => ({
+        ...prev,
+        description: result.description || prev.description,
+        price: result.price || prev.price,
+      }));
+      toast({ title: "IA preencheu os campos!" });
+    } catch {
+      toast({ title: "Erro ao gerar com IA", variant: "destructive" });
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   // ── handlers ──
   const openNewItem = () => {
@@ -413,13 +436,26 @@ export default function Menu() {
 
             <div className="space-y-2">
               <Label htmlFor="item-name">Nome do Produto</Label>
-              <Input
-                id="item-name"
-                placeholder="Ex: Filé Mignon ao Molho Madeira"
-                value={editingItem.name}
-                onChange={(e) => setEditingItem({ ...editingItem, name: e.target.value })}
-                required
-              />
+              <div className="flex gap-2">
+                <Input
+                  id="item-name"
+                  placeholder="Ex: Filé Mignon ao Molho Madeira"
+                  value={editingItem.name}
+                  onChange={(e) => setEditingItem({ ...editingItem, name: e.target.value })}
+                  required
+                  className="flex-1"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleAiGenerate}
+                  disabled={aiLoading}
+                  className="shrink-0 gap-1 text-purple-600 border-purple-300 hover:bg-purple-50 hover:text-purple-700"
+                >
+                  {aiLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                  {aiLoading ? "Gerando..." : "Gerar com IA"}
+                </Button>
+              </div>
             </div>
 
             <div className="space-y-2">

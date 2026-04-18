@@ -202,6 +202,11 @@ export const api = {
     await apiRequest("DELETE", `${BASE}/menu-items/${id}/`);
   },
 
+  aiGenerateDish: async (name: string): Promise<{ description: string; price: string; emoji: string }> => {
+    const res = await apiRequest("POST", `${BASE}/ai/generate-dish/`, { name });
+    return res.json();
+  },
+
   // ── Tables ─────────────────────────────────────────────────────────
   getTables: async (): Promise<PaginatedResponse<Table>> => {
     const res = await fetch(`${BASE}/tables/`, { credentials: "include" });
